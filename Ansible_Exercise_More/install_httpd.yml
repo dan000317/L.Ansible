@@ -1,0 +1,16 @@
+---
+
+- hosts: all
+  become: true
+  tasks: 
+  
+  - name: Install httpd package
+    yum:
+      name: httpd
+
+  - name: enable and start httpd package
+    ansible.builtin.systemd:
+      name: httpd
+      state: started
+      enabled: true
+      
