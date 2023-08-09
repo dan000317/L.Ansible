@@ -8,18 +8,46 @@
     yum:
       name: httpd
       state: latest
+    when: ansible_distribution == "CentOS"
 
   - name: update repository index
     yum:
       update_cache=true
+    when: ansible_distribution == "CentOS"
 
   - name: enable and start httpd package
     ansible.builtin.systemd:
       name: httpd
       state: started
       enabled: true
+    when: ansible_distribution == "CentOS"
   
-  - name: install ssl module
+  - name: install php
     yum:
-      name: mod_ssl
+      name: php
       state: latest
+    when: ansible_distribution == "CentOS"
+
+  - name: Install apache2 package
+    apt:
+      name: apache2
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+  - name: update repository index
+    apt:
+      update_cache=true
+    when: ansible_distribution == "Ubuntu"
+
+  - name: enable and start apache2 package
+    ansible.builtin.systemd:
+      name: apache2
+      state: started
+      enabled: true
+    when: ansible_distribution == "Ubuntu"
+
+  - name: install php support for apache2
+    apt:
+      name: libapache2-mod-php
+      state: latest
+    when: ansible_distribution == "Ubuntu"
