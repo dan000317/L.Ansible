@@ -8,12 +8,25 @@
     yum:
       name: httpd
       state: absent
+    when: ansible_distribution in ["CentOS"]
 
   - name: Remove ssl module
     yum:
-      name: mod_ssl
+      name: php 
       state: absent
+    when: ansible_distribution in ["CentOS"]
 
-  - name: update repository index
-    yum:
-      update_cache=true
+
+
+  - name: Remove apache2 package
+    apt:
+      name: apache2
+      state: absent
+    when: ansible_distribution in ["Ubuntu"]
+
+  - name: Remove ssl module
+    apt:
+      name: libapache2-mod-php
+      state: absent
+    when: ansible_distribution in ["Ubuntu"]
+
