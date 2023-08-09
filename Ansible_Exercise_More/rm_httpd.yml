@@ -1,0 +1,19 @@
+---
+
+- hosts: all
+  become: true
+  tasks: 
+  
+  - name: Remove httpd package
+    yum:
+      name: httpd
+      state: absent
+
+  - name: Remove ssl module
+    yum:
+      name: mod_ssl
+      state: absent
+
+  - name: update repository index
+    yum:
+      update_cache=true

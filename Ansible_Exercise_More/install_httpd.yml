@@ -7,10 +7,19 @@
   - name: Install httpd package
     yum:
       name: httpd
+      state: latest
+
+  - name: update repository index
+    yum:
+      update_cache=true
 
   - name: enable and start httpd package
     ansible.builtin.systemd:
       name: httpd
       state: started
       enabled: true
-      
+  
+  - name: install ssl module
+    yum:
+      name: mod_ssl
+      state: latest
