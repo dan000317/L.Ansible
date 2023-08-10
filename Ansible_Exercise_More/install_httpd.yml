@@ -6,41 +6,9 @@
   
 
   - name: Install latest httpd and php package in CentOS
-    dnf:
+    package:
       name: 
-        - httpd
-        - php
+        - '{{ apache_package }}'
+        - '{{ php_package }}'
       state: latest
       update_cache: true
-    when: ansible_distribution == "CentOS"
-
-#  - name: Enable and start httpd and php package in CentOS
-#    systemd:
-#      name: 
-#        - httpd
-#        - php
-#      state: restarted
-#      enabled: true
-#    when: ansible_distribution == "CentOS"
-  
-##################################################################
-
-  - name: Install latest apache2 and php package in Ubuntu
-    apt:
-      name: 
-        - apache2
-        - libapache2-mod-php
-      state: latest
-      update_cache: true
-    when: ansible_distribution == "Ubuntu"
-
-
-#  - name: Enable and start apache2 and php package in Ubuntu
-#    systemd:
-#      name: 
-#        - apache2
-#        - libapache2-mod-php
-#      state: restarted
-#      enabled: true
-#    when: ansible_distribution == "Ubuntu"
-
