@@ -4,10 +4,6 @@
   become: true
   tasks: 
   
-  - name: Update dnf cache of CentOS Dist.
-    dnf:
-      update_cache=true
-    when: ansible_distribution == "CentOS"
 
   - name: Install latest httpd and php package in CentOS
     dnf:
@@ -15,6 +11,7 @@
         - httpd
         - php
       state: latest
+      update_cache: true
     when: ansible_distribution == "CentOS"
 
 #  - name: Enable and start httpd and php package in CentOS
@@ -28,19 +25,13 @@
   
 ##################################################################
 
-
-  - name: Update dnf cache of Ubuntu Dist.
-    apt:
-      update_cache=true
-    when: ansible_distribution == "Ubuntu"
-
-
   - name: Install latest apache2 and php package in Ubuntu
     apt:
       name: 
         - apache2
         - libapache2-mod-php
       state: latest
+      update_cache: true
     when: ansible_distribution == "Ubuntu"
 
 
