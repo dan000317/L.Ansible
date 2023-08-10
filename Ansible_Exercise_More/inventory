@@ -9,3 +9,5 @@
 [file-servers]
 192.168.10.14
 
+[workstation]
+192.168.10.15
