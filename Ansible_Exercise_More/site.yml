@@ -58,6 +58,29 @@
       state: latest
     when: ansible_distribution == "CentOS"
     
+  - name: start httpd (CentOS) 
+    tags: apache, CentOS, httpd
+    service:
+      name: httpd
+      state: started
+      enabled: true
+    when: ansible_distribution == "CentOS"
+
+  - name: start apache2 (Ubuntu)
+    tags: apache, Ubuntu, httpd, apache2
+    service:
+      name: httpd
+      state: started
+      enabled: true
+    when: ansible_distribution == "Ubuntu"
+
+  - name: add new ssh public key to vagrant user
+    tags: apache, apache2, httpd, CentOS
+    lineinfile:
+      path: /home/vagrant/.ssh/authorized_keys
+      insertafter: EOF
+      line: ed25519 test public key
+      
 
   - name: copy default html file for site
     tags: apache, apache2, httpd, html
