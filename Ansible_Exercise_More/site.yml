@@ -18,6 +18,29 @@
       update_cache: true
     when: ansible_distribution == "Ubuntu"  
 
+  - name: crete dan user
+    tags: always
+    user:
+      name: dan
+      group: root
+
+  - name: add ssh key for dan
+    tags: always
+    authorized_key:
+      user: dan
+      key: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFr1W9y4QUKxwboCMw1vNnazJzA+PfhXhGGL2+v5MJlu vagrant@ubuntu2204.localdomain'
+      
+  - name: add sudoers file for dan
+    tags: always
+    copy:
+      src: sudoer_dan
+      dest: /etc/sudoers.d/dan
+      owner: root
+      group: root
+      mode: 0440
+
+
+
 - hosts: workstations
   become: true
   tasks:
