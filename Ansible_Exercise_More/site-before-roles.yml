@@ -1,0 +1,144 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks: 
+  
+  - name: install updates (CentOS)
+    tags: always
+    dnf: 
+      update_only: true
+      update_cache: true
+    when: ansible_distribution == "CentOS"
+
+  - name: install updates (Ubuntu)
+    tags: always    
+    apt:
+      upgrade: dist
+      update_cache: true
+    when: ansible_distribution == "Ubuntu"  
+
+  - name: crete dan user
+    tags: always
+    user:
+      name: dan
+      group: root
+
+  - name: add ssh key for dan
+    tags: always
+    authorized_key:
+      user: dan
+      key: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFr1W9y4QUKxwboCMw1vNnazJzA+PfhXhGGL2+v5MJlu vagrant@ubuntu2204.localdomain'
+      
+  - name: add sudoers file for dan
+    tags: always
+    copy:
+      src: sudoer_dan
+      dest: /etc/sudoers.d/dan
+      owner: root
+      group: root
+      mode: 0440
+
+
+
+- hosts: workstations
+  become: true
+  tasks:
+  
+    - name: install unzip
+      package:
+        name: unzip
+     
+    - name: install terraform
+      unarchive:
+        src: https://releases.hashicorp.com/terraform/0.12.28/terraform_0.12.28_linux_amd64.zip
+        dest: /usr/local/bin
+        remote_src: true
+        mode: 0755
+        owner: root
+        group: root     
+
+- hosts: web-servers
+  become: true
+  tasks:
+
+  - name: install apache and php for Ubuntu servers
+    tags: web-servers, apache, php, Ubuntu
+    apt:
+      name: 
+        - apache2
+        - libapache2-mod-php
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+
+  - name: install apache and php for CentOS servers
+    tags: apache, php, CentOS, web-servers
+    dnf:
+      name:
+        - httpd
+        - php
+      state: latest
+    when: ansible_distribution == "CentOS"
+    
+  - name: start httpd (CentOS) 
+    tags: apache, CentOS, httpd
+    service:
+      name: httpd
+      state: started
+      enabled: true
+    when: ansible_distribution == "CentOS"
+
+  - name: start apache2 (Ubuntu)
+    tags: apache, Ubuntu, httpd, apache2
+    service:
+      name: httpd
+      state: started
+      enabled: true
+    when: ansible_distribution == "Ubuntu"
+
+  - name: add new ssh public key to vagrant user
+    tags: apache, apache2, httpd, CentOS
+    lineinfile:
+      path: /home/vagrant/.ssh/authorized_keys
+      insertafter: EOF
+      line: ed25519 test public key
+      
+
+  - name: copy default html file for site
+    tags: apache, apache2, httpd, html
+    copy:
+      src: default-site.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644
+
+
+- hosts: db-servers
+  become: true
+  tasks:
+
+  - name: install mariadb package (Ubuntu)
+    tags: mariadb, mariadb-server, Ubuntu, db-servers
+    apt:
+      name: mariadb-server
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+  - name: install mariadb package (CentOS)
+    tags: mariadb, mariadb-server, CentOS, db-servers
+    dnf:
+      name: mariadb
+      state: latest
+    when: ansible_distribution == "CentOS"
+
+- hosts: file-servers
+  become: true
+  tasks:
+
+  - name: install samba package
+    tags: samba, file-servers
+    package:
+      name: samba
+      state: latest
